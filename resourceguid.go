@@ -21,13 +21,13 @@ func (guid ResourceGuid) Key() uint64 {
 
 func (guid ResourceGuid) Type() uint16 {
 	f :=  uint64(guid & Type) >> 48
-	// f = flipBits(f)
+	f = flipBits(f)
 
 	return uint16(f)
 }
 
 func (guid ResourceGuid) String() string {
-	return fmt.Sprintf("0x%04X%012X", guid.Type(), guid.Key())
+	return fmt.Sprintf("%012X.%03X", guid.Key(), guid.Type())
 }
 
 func flipBits(num uint64) uint64 {
@@ -37,5 +37,5 @@ func flipBits(num uint64) uint64 {
 	num = ((num >> 8) & 0x00FF00FF) | ((num & 0x00FF00FF) << 8)
 	num = (num >> 16) | (num << 16)
 	num >>= 20
-	return num
+	return num + 1
 }

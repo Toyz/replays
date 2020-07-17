@@ -23,8 +23,8 @@ import (
 
 type Replay struct {
 	ReplayName    string
-	MapGuid       ResourceGuid
-	HeroGuid      ResourceGuid
+	Map           Map
+	Hero          Hero
 	SkinGuid      ResourceGuid
 	Timestamp     time.Time
 	UserId        uint64
@@ -46,14 +46,18 @@ func Parse(inFile []byte) (Replay, error) {
 
 	buf := bytes.NewBuffer(data)
 
-	if err := binary.Read(buf, binary.LittleEndian, &replay.MapGuid); err != nil {
+	var mapGUID ResourceGuid
+	if err := binary.Read(buf, binary.LittleEndian, &mapGUID); err != nil {
 		return replay, err
 	}
-	replay.MapGuid = (replay.MapGuid &^ 0xFFFFFFFF00000000) | 0x0790000000000000
+	mapGUID = (mapGUID &^ 0xFFFFFFFF00000000) | 0x0790000000000000
+	replay.Map = newMap(mapGUID)
 
-	if err := binary.Read(buf, binary.LittleEndian, &replay.HeroGuid); err != nil {
+	var heroGUID ResourceGuid
+	if err := binary.Read(buf, binary.LittleEndian, &heroGUID); err != nil {
 		return replay, err
 	}
+	replay.Hero = newHero(heroGUID)
 
 	if err := binary.Read(buf, binary.LittleEndian, &replay.SkinGuid); err != nil {
 		return replay, err
