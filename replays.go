@@ -25,7 +25,7 @@ type Replay struct {
 	ReplayName    string
 	Map           Map
 	Hero          Hero
-	SkinGuid      ResourceGuid
+	Skin          Skin
 	Timestamp     time.Time
 	UserId        uint64
 	ReplayType    ReplayType
@@ -59,9 +59,11 @@ func Parse(inFile []byte) (Replay, error) {
 	}
 	replay.Hero = newHero(heroGUID)
 
-	if err := binary.Read(buf, binary.LittleEndian, &replay.SkinGuid); err != nil {
+	var skinGUID ResourceGuid
+	if err := binary.Read(buf, binary.LittleEndian, &skinGUID); err != nil {
 		return replay, err
 	}
+	replay.Skin = newSkin(skinGUID)
 
 	var TimeStamp int64
 	if err := binary.Read(buf, binary.LittleEndian, &TimeStamp); err != nil {
